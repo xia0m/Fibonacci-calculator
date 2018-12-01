@@ -12,9 +12,14 @@ app.use(bodyParser.json());
 
 const {Pool} = require('pg');
 const pgClient = new Pool({
-  user:keys.pgUser,
-  host:keys.pgHost,
+  user: keys.pgUser,
+  host: keys.pgHost,
   database: keys.pgDatabase,
   password: keys.pgPassword,
   ports: keys.pgPort
-})
+});
+
+pgClient.on('error',()=>console.log('Lost PG connection'));
+
+pgClient.query('CREATE TABLE IF NOT EXISTS values (number INT)')
+  .catch((err)=>console.log(err));
