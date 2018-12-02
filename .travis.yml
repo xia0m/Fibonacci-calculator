@@ -1,0 +1,26 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t xia0m/fib-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run xia0m/fib-test npm test -- --coverage
+
+after_success:
+  - docker build -t xia0m/fib-client ./client
+  - docker build -t xia0m/fib-nginx ./nginx
+  - docker build -t xia0m/fib-server ./server
+  - docker build -t xia0m/fib-worker ./worker
+  # login to dockerhub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  # push images to docker hub
+  - docker push xia0m/fib-client 
+  - docker push xia0m/fib-nginx 
+  - docker push xia0m/fib-server 
+  - docker push xia0m/fib-worker
+
+
+
